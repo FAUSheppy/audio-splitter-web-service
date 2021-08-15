@@ -8,7 +8,7 @@ import pydub.playback
 
 
 def playTagAndSave(chunk, origname, outputDir, count):
-    chunk.export("{}-chunk-{}.ogg".format(origname,count))
+    chunk.export("{}-chunk-{}.ogg".format(origname,str(count).zfill(3)))
 
 if __name__ == "__main__":
 

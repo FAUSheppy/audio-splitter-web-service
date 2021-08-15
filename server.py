@@ -12,11 +12,21 @@ cache = "cache/"
 @app.route("/upload", methods = ['GET', 'POST'])
 def upload():
     if flask.request.method == 'POST':
+        os.system("rm -r cache/")
+        os.system("mkdir cache/")
+
         f = flask.request.files['file']
         fname = werkzeug.utils.secure_filename(f.filename)
         sfName = os.path.join(cache, fname)
-        f.save(sfName)
-        os.system("./audio_splitter.py --silence-padding 500 --silence-vol -70 --target-dir chunks {}".format(sfName))
+        if not sfName.endswith(".ogg"):
+            f.save(sfName + "_tmp")
+            os.system("ffmpeg -i '{}' '{}.ogg'".format(sfName + "_tmp", sfName))
+            sfName += ".ogg"
+        else:
+            f.save(sfName)
+
+        os.system("./audio_splitter.py --silence-padding 500 --silence-vol -50 --target-dir chunks {}".format(sfName))
+        os.system("rm static/segments.zip")
         os.system("zip -r static/segments.zip cache")
         return flask.redirect("/segments.zip")
 
