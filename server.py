@@ -18,10 +18,14 @@ def upload():
         f.save(sfName)
         os.system("./audio_splitter.py --silence-padding 500 --silence-vol -70 --target-dir chunks {}".format(sfName))
         os.system("zip -r static/segments.zip cache")
-        return 
+        return flask.redirect("/segments.zip")
 
     
     return flask.render_template("upload.html")
+
+@app.route("/segments.zip")
+def segments():
+    return flask.send_from_directory("static", "segments.zip")
 
 @app.before_first_request
 def init():
